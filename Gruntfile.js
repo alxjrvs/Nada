@@ -6,10 +6,9 @@ module.exports = function(grunt) {
       src: 'Gruntfile.js'
     },
     coffee: {
-     compileWithMapsDir: {
+     compileWithMaps: {
         options: {
           sourceMap: true,
-          sourceMapDir: 'js/maps'
         },
         files: {
           'js/nada.js': ['js/factories.coffee']
