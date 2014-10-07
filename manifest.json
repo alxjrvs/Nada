@@ -1,0 +1,14 @@
+{
+  "manifest_version": 2,
+
+  "name": "Nada",
+  "description": "That's like pouring perfume on a pig.",
+  "version": "1.0",
+
+  "permissions": [
+  ],
+
+  "browser_action": {
+    "default_icon": "images/icon.png",
+  }
+}
