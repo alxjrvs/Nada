@@ -11,6 +11,7 @@ module.exports = function(grunt) {
           sourceMap: true,
         },
         files: {
+          'js/background.js': ['js/coffee/background.coffee'],
           'js/nada.js': [
             'js/coffee/box.coffee',
             'js/coffee/positioner.coffee',

@@ -2,18 +2,26 @@ class Glasses
   constructor: -> 
     @skin = new Skin
 
+  toggle: ->
+    if @on
+      @takeOff()
+    else
+      @putOn();
+
   putOn: ->
     @findMasks()
     @hideLies()
     @showTruths()
+    @on = true;
 
   takeOff: ->
     @restoreLies()
     @removeTruth()
     @skin.reject()
+    @on = false;
 
   findMasks: ->
-    masks = $('iframe')
+    masks = document.getElementsByTagName 'iframe'
     @masks = for mask in masks
       new Mask mask
 

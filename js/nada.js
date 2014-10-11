@@ -43,12 +43,15 @@
     };
 
     Skin.prototype.inject = function() {
-      $('head').after(this.font());
-      return $('head').after(this.style());
+      var head;
+      head = document.getElementsByTagName('head').item().innerHTML;
+      head + this.font();
+      return head + this.style();
     };
 
     Skin.prototype.font = function() {
-      return $('<link />', this.fontConfig());
+      debugger;
+      return "<link " + (this.digest(this.fontConfig())) + ">";
     };
 
     Skin.prototype.style = function() {
@@ -68,10 +71,20 @@
       return {
         "class": 'nada',
         rel: "stylesheet",
-        href: "./css/app.css",
+        href: chrome.extension.getURL("css/app.css"),
         type: "text/css",
         media: "all"
       };
+    };
+
+    Skin.prototype.digest = function(map) {
+      var key, line, value, _i, _len;
+      line = null;
+      for (value = _i = 0, _len = map.length; _i < _len; value = ++_i) {
+        key = map[value];
+        line = line + ("" + key + "=" + value);
+      }
+      return line;
     };
 
     return Skin;
@@ -200,21 +213,31 @@
       this.skin = new Skin;
     }
 
+    Glasses.prototype.toggle = function() {
+      if (this.on) {
+        return this.takeOff();
+      } else {
+        return this.putOn();
+      }
+    };
+
     Glasses.prototype.putOn = function() {
       this.findMasks();
       this.hideLies();
-      return this.showTruths();
+      this.showTruths();
+      return this.on = true;
     };
 
     Glasses.prototype.takeOff = function() {
       this.restoreLies();
       this.removeTruth();
-      return this.skin.reject();
+      this.skin.reject();
+      return this.on = false;
     };
 
     Glasses.prototype.findMasks = function() {
       var mask, masks;
-      masks = $('iframe');
+      masks = document.getElementsByTagName('iframe');
       return this.masks = (function() {
         var _i, _len, _results;
         _results = [];
@@ -277,13 +300,7 @@
 
   this.g = new Glasses;
 
-  this.takeOffTheGlasses = function() {
-    return this.g.takeOff();
-  };
-
-  this.putOnTheGlasses = function() {
-    return this.g.putOn();
-  };
+  this.g.toggle();
 
 }).call(this);
 

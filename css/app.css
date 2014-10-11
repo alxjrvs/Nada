@@ -1,3 +1,7 @@
+body {
+  filter: grayscale(100%) !important;
+  -webkit-filter: grayscale(100%) !important; }
+
 theyframe {
   font-family: 'Didact Gothic', "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", sans-serif;
   position: absolute;

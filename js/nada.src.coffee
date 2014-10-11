@@ -20,16 +20,18 @@ class Box
     return @height
 
 class Skin
-
+  constructor: -> 
   reject: ->
     $('.nada').remove()
 
   inject: ->
-    $('head').after @font()
-    $('head').after @style()
+    head = document.getElementsByTagName('head').item().innerHTML
+    head +  @font()
+    head + @style()
 
   font: ->
-    $('<link />', @fontConfig())
+    debugger
+    "<link #{@digest @fontConfig() }>"
 
   style: ->
     $('<link />', @styleConfig())
@@ -46,10 +48,16 @@ class Skin
     {
       class: 'nada',
       rel: "stylesheet",
-      href: "./css/app.css",
+      href: chrome.extension.getURL("css/app.css")
       type: "text/css",
       media: "all"
     }
+
+  digest: (map) ->
+    line = null
+    for key, value in map
+      line = line + "#{key}=#{value}"
+    line
 
 class Message
   @TRUTH: [
@@ -156,18 +164,26 @@ class Glasses
   constructor: -> 
     @skin = new Skin
 
+  toggle: ->
+    if @on
+      @takeOff()
+    else
+      @putOn();
+
   putOn: ->
     @findMasks()
     @hideLies()
     @showTruths()
+    @on = true;
 
   takeOff: ->
     @restoreLies()
     @removeTruth()
     @skin.reject()
+    @on = false;
 
   findMasks: ->
-    masks = $('iframe')
+    masks = document.getElementsByTagName 'iframe'
     @masks = for mask in masks
       new Mask mask
 
@@ -194,9 +210,4 @@ class Glasses
 
 
 @g = new Glasses
-
-@takeOffTheGlasses = ->
-  @g.takeOff()
-
-@putOnTheGlasses = ->
-  @g.putOn()
+@g.toggle()

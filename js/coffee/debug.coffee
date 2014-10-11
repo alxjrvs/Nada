@@ -1,7 +1,2 @@
 @g = new Glasses
-
-@takeOffTheGlasses = ->
-  @g.takeOff()
-
-@putOnTheGlasses = ->
-  @g.putOn()
+@g.toggle()
