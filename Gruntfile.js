@@ -11,22 +11,31 @@ module.exports = function(grunt) {
           sourceMap: true,
         },
         files: {
-          'js/nada.js': ['js/factories.coffee']
+          'js/nada.js': [
+            'js/coffee/box.coffee',
+            'js/coffee/positioner.coffee',
+            'js/coffee/skin.coffee',
+            'js/coffee/message.coffee',
+            'js/coffee/truth.coffee',
+            'js/coffee/mask.coffee',
+            'js/coffee/glasses.coffee',
+            'js/coffee/debug.coffee'
+            ]
         }
       }
     },
     sass: {
       dist: {
         files: {
-          'css/app.css': 'css/app.scss'
+          'css/app.css': 'css/scss/app.scss'
         }
       }
     },
     watch: {
       files: [
-        'js/*.coffee',
-        'css/*.scss',
-        'css/*.sass'
+        'js/coffee/*.coffee',
+        'css/scss/*.scss',
+        'css/sass/*.sass'
       ],
       tasks: [
         'coffee',

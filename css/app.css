@@ -1,4 +1,15 @@
 theyframe {
-  color: red; }
+  font-family: 'Didact Gothic', "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", sans-serif;
+  position: absolute;
+  background: #FFF;
+  color: #000;
+  border: solid 4px #000;
+  font-weight: 800;
+  text-align: center;
+  overflow: hidden; }
+
+truth {
+  display: block;
+  text-transform: uppercase; }
 
 /*# sourceMappingURL=app.css.map */

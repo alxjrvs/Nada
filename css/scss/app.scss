@@ -1,0 +1,26 @@
+//Pallete
+$white: #FFF;
+$black: #000;
+
+
+//Colors
+$theyframe-background: $white;
+$theyframe-fontcolor: $black;
+$theyframe-border: solid 4px $black;
+
+
+theyframe {
+  font-family: 'Didact Gothic', "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", sans-serif;
+  position: absolute;
+  background: $theyframe-background;
+  color: $theyframe-fontcolor;
+  border: $theyframe-border;
+  font-weight: 800;
+  text-align: center;
+  overflow: hidden;
+}
+
+truth {
+  display: block;
+  text-transform: uppercase;
+}
