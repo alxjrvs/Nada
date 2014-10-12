@@ -43,48 +43,41 @@
     };
 
     Skin.prototype.inject = function() {
-      var head;
-      head = document.getElementsByTagName('head').item().innerHTML;
-      head + this.font();
-      return head + this.style();
+      var fontElement, head, styleElement;
+      head = document.getElementsByTagName('head')[0];
+      fontElement = this.fontElement();
+      styleElement = this.styleElement();
+      head.appendChild(fontElement);
+      return head.appendChild(styleElement);
     };
 
-    Skin.prototype.font = function() {
-      debugger;
-      return "<link " + (this.digest(this.fontConfig())) + ">";
+    Skin.prototype.fontElement = function() {
+      var element;
+      element = document.createElement('link');
+      return this.fontConfig(element);
     };
 
-    Skin.prototype.style = function() {
-      return $('<link />', this.styleConfig());
+    Skin.prototype.styleElement = function() {
+      var element;
+      element = document.createElement('link');
+      return this.styleConfig(element);
     };
 
-    Skin.prototype.fontConfig = function() {
-      return {
-        "class": 'nada',
-        href: 'http://fonts.googleapis.com/css?family=Didact+Gothic',
-        rel: 'stylesheet',
-        type: 'text/css'
-      };
+    Skin.prototype.fontConfig = function(elem) {
+      elem["class"] = 'nada';
+      elem.href = 'http://fonts.googleapis.com/css?family=Didact+Gothic';
+      elem.rel = 'stylesheet';
+      elem.type = 'text/css';
+      return elem;
     };
 
-    Skin.prototype.styleConfig = function() {
-      return {
-        "class": 'nada',
-        rel: "stylesheet",
-        href: chrome.extension.getURL("css/app.css"),
-        type: "text/css",
-        media: "all"
-      };
-    };
-
-    Skin.prototype.digest = function(map) {
-      var key, line, value, _i, _len;
-      line = null;
-      for (value = _i = 0, _len = map.length; _i < _len; value = ++_i) {
-        key = map[value];
-        line = line + ("" + key + "=" + value);
-      }
-      return line;
+    Skin.prototype.styleConfig = function(elem) {
+      elem["class"] = 'nada';
+      elem.rel = "stylesheet";
+      elem.href = chrome.extension.getURL("css/app.css");
+      elem.type = "text/css";
+      elem.media = "all";
+      return elem;
     };
 
     return Skin;
@@ -122,7 +115,11 @@
     }
 
     Truth.prototype.reveal = function() {
-      return $('body').append(this.theyframe());
+      var body, theyframe;
+      body = document.getElementsByTagName('body')[0];
+      theyframe = this.theyframe();
+      console.log(theyframe);
+      return body.appendChild(theyframe);
     };
 
     Truth.prototype.buildBox = function() {
@@ -130,11 +127,17 @@
     };
 
     Truth.prototype.textContainer = function() {
-      return $('<truth />', this.textConfig());
+      var element;
+      element = document.createElement('truth');
+      return this.textConfig(element);
     };
 
     Truth.prototype.theyframe = function() {
-      return $('<theyframe />', this.truthConfig()).append(this.textContainer());
+      var element, theyframe;
+      element = document.createElement('theyframe');
+      theyframe = this.truthConfig(element);
+      theyframe.appendChild(this.textContainer());
+      return theyframe;
     };
 
     Truth.prototype.assignMessage = function() {
@@ -145,27 +148,20 @@
       return "" + this.message.text + "--" + (this.generateUUID());
     };
 
-    Truth.prototype.textConfig = function() {
-      return {
-        text: this.message.text,
-        "class": "" + this.box.orientation,
-        css: {
-          "font-size": "" + (this.message.fontSize()) + "px",
-          "line-height": "" + (this.box.lineHeight()) + "px"
-        }
-      };
+    Truth.prototype.textConfig = function(elem) {
+      elem.innerHTML = this.message.text;
+      elem.style["font-size"] = "" + (this.message.fontSize()) + "px";
+      elem.style["line-height"] = "" + (this.box.lineHeight()) + "px";
+      return elem;
     };
 
-    Truth.prototype.truthConfig = function() {
-      return {
-        "class": "" + (this.matchingClass()),
-        css: {
-          height: "" + this.box.height + "px",
-          width: "" + this.box.width + "px",
-          left: "" + (this.box.left - 10) + "px",
-          top: "" + (this.box.top - 10) + "px"
-        }
-      };
+    Truth.prototype.truthConfig = function(elem) {
+      elem["class"] = "" + (this.matchingClass());
+      elem.style.height = "" + this.box.height + "px";
+      elem.style.width = "" + this.box.width + "px";
+      elem.style.left = "" + (this.box.left - 10) + "px";
+      elem.style.top = "" + (this.box.top - 10) + "px";
+      return elem;
     };
 
     Truth.prototype.generateUUID = function() {
@@ -189,11 +185,13 @@
 
   Mask = (function() {
     function Mask(element) {
+      var rect;
       this.element = element;
-      this.height = this.element.offsetHeight;
-      this.width = this.element.offsetWidth;
-      this.left = this.element.offsetLeft;
-      this.top = this.element.offsetTop;
+      rect = this.element.getBoundingClientRect();
+      this.height = rect.height;
+      this.width = rect.width;
+      this.left = rect.left;
+      this.top = rect.top;
     }
 
     Mask.prototype.hide = function() {
@@ -237,12 +235,13 @@
 
     Glasses.prototype.findMasks = function() {
       var mask, masks;
-      masks = document.getElementsByTagName('iframe');
+      masks = document.getElementsByTagName('img');
       return this.masks = (function() {
         var _i, _len, _results;
         _results = [];
         for (_i = 0, _len = masks.length; _i < _len; _i++) {
           mask = masks[_i];
+          console.log(mask);
           _results.push(new Mask(mask));
         }
         return _results;
@@ -255,6 +254,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         mask = _ref[_i];
+        console.log(mask);
         _results.push(mask.show());
       }
       return _results;
@@ -272,26 +272,18 @@
     };
 
     Glasses.prototype.showTruths = function() {
-      var truth, _i, _len, _ref, _results;
-      this.assembleTruths();
       this.skin.inject();
-      _ref = this.truths;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        truth = _ref[_i];
-        _results.push(truth.reveal());
-      }
-      return _results;
+      return this.truths = this.masks.map(function(mask) {
+        var truth;
+        truth = new Truth(mask);
+        truth.reveal();
+        return truth;
+      });
     };
 
     Glasses.prototype.removeTruth = function() {
-      return $('theyframe').remove();
-    };
-
-    Glasses.prototype.assembleTruths = function() {
-      return this.truths = this.masks.map(function(mask) {
-        return new Truth(mask);
-      });
+      var theyframe;
+      return theyframe = document.findElementsByTagName('theyframe');
     };
 
     return Glasses;

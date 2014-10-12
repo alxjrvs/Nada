@@ -4,44 +4,43 @@ class Truth
     @assignMessage()
 
   reveal: ->
-    $('body').append @theyframe()
+    body = document.getElementsByTagName('body')[0]
+    theyframe = @theyframe()
+    console.log theyframe
+    body.appendChild theyframe
 
   buildBox: ->
     @box = new Box @mask.height, @mask.width, @mask.left, @mask.top
 
   textContainer: ->
-    $('<truth />', @textConfig())
+    element = document.createElement 'truth'
+    @textConfig element
 
   theyframe: ->
-    $('<theyframe />',(@truthConfig())).append @textContainer()
+    element = document.createElement 'theyframe'
+    theyframe = @truthConfig element
+    theyframe.appendChild @textContainer()
+    theyframe
 
   assignMessage: ->
-    @message= new Message @box
+    @message = new Message @box
 
   matchingClass: ->
     "#{@message.text}--#{@generateUUID()}"
 
-  textConfig: ->
-    {
-      text: @message.text
-      class: "#{@box.orientation}"
-      css: {
-        "font-size": "#{@message.fontSize()}px"
-        "line-height": "#{@box.lineHeight()}px"
+  textConfig: (elem) ->
+    elem.innerHTML = @message.text
+    elem.style["font-size"] = "#{@message.fontSize()}px"
+    elem.style["line-height"] = "#{@box.lineHeight()}px"
+    elem
 
-      }
-    }
-
-  truthConfig: ->
-    {
-      class: "#{@matchingClass()}"
-      css: {
-        height: "#{@box.height}px",
-        width: "#{@box.width}px",
-        left: "#{@box.left - 10}px",
-        top: "#{@box.top - 10}px",
-      }
-    }
+  truthConfig: (elem) ->
+    elem.class = "#{@matchingClass()}"
+    elem.style.height = "#{@box.height}px"
+    elem.style.width = "#{@box.width}px"
+    elem.style.left = "#{@box.left - 10}px"
+    elem.style.top = "#{@box.top - 10}px"
+    elem
 
   generateUUID: ->
     return @uuid if @uuid

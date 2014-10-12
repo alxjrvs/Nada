@@ -20,44 +20,39 @@ class Box
     return @height
 
 class Skin
-  constructor: -> 
+  constructor: ->
   reject: ->
     $('.nada').remove()
 
   inject: ->
-    head = document.getElementsByTagName('head').item().innerHTML
-    head +  @font()
-    head + @style()
+    head = document.getElementsByTagName('head')[0]
+    fontElement = @fontElement()
+    styleElement = @styleElement()
+    head.appendChild fontElement
+    head.appendChild styleElement
 
-  font: ->
-    debugger
-    "<link #{@digest @fontConfig() }>"
+  fontElement: ->
+    element = document.createElement 'link'
+    @fontConfig element
 
-  style: ->
-    $('<link />', @styleConfig())
+  styleElement: ->
+    element = document.createElement 'link'
+    @styleConfig element
 
-  fontConfig: ->
-    {
-      class: 'nada',
-      href:'http://fonts.googleapis.com/css?family=Didact+Gothic',
-      rel: 'stylesheet',
-      type: 'text/css'
-    }
+  fontConfig: (elem) ->
+      elem.class = 'nada'
+      elem.href = 'http://fonts.googleapis.com/css?family=Didact+Gothic'
+      elem.rel = 'stylesheet'
+      elem.type = 'text/css'
+      elem
 
-  styleConfig: ->
-    {
-      class: 'nada',
-      rel: "stylesheet",
-      href: chrome.extension.getURL("css/app.css")
-      type: "text/css",
-      media: "all"
-    }
-
-  digest: (map) ->
-    line = null
-    for key, value in map
-      line = line + "#{key}=#{value}"
-    line
+  styleConfig: (elem) ->
+      elem.class ='nada'
+      elem.rel = "stylesheet"
+      elem.href = chrome.extension.getURL("css/app.css")
+      elem.type = "text/css"
+      elem.media = "all"
+      elem
 
 class Message
   @TRUTH: [
@@ -97,44 +92,43 @@ class Truth
     @assignMessage()
 
   reveal: ->
-    $('body').append @theyframe()
+    body = document.getElementsByTagName('body')[0]
+    theyframe = @theyframe()
+    console.log theyframe
+    body.appendChild theyframe
 
   buildBox: ->
     @box = new Box @mask.height, @mask.width, @mask.left, @mask.top
 
   textContainer: ->
-    $('<truth />', @textConfig())
+    element = document.createElement 'truth'
+    @textConfig element
 
   theyframe: ->
-    $('<theyframe />',(@truthConfig())).append @textContainer()
+    element = document.createElement 'theyframe'
+    theyframe = @truthConfig element
+    theyframe.appendChild @textContainer()
+    theyframe
 
   assignMessage: ->
-    @message= new Message @box
+    @message = new Message @box
 
   matchingClass: ->
     "#{@message.text}--#{@generateUUID()}"
 
-  textConfig: ->
-    {
-      text: @message.text
-      class: "#{@box.orientation}"
-      css: {
-        "font-size": "#{@message.fontSize()}px"
-        "line-height": "#{@box.lineHeight()}px"
+  textConfig: (elem) ->
+    elem.innerHTML = @message.text
+    elem.style["font-size"] = "#{@message.fontSize()}px"
+    elem.style["line-height"] = "#{@box.lineHeight()}px"
+    elem
 
-      }
-    }
-
-  truthConfig: ->
-    {
-      class: "#{@matchingClass()}"
-      css: {
-        height: "#{@box.height}px",
-        width: "#{@box.width}px",
-        left: "#{@box.left - 10}px",
-        top: "#{@box.top - 10}px",
-      }
-    }
+  truthConfig: (elem) ->
+    elem.class = "#{@matchingClass()}"
+    elem.style.height = "#{@box.height}px"
+    elem.style.width = "#{@box.width}px"
+    elem.style.left = "#{@box.left - 10}px"
+    elem.style.top = "#{@box.top - 10}px"
+    elem
 
   generateUUID: ->
     return @uuid if @uuid
@@ -148,10 +142,11 @@ class Truth
 
 class Mask
   constructor: (@element) ->
-    @height = @element.offsetHeight
-    @width = @element.offsetWidth
-    @left = @element.offsetLeft
-    @top = @element.offsetTop
+    rect = @element.getBoundingClientRect()
+    @height = rect.height
+    @width = rect.width
+    @left = rect.left
+    @top = rect.top
 
   hide: ->
     @element.style.visibility = "hidden"
@@ -183,12 +178,14 @@ class Glasses
     @on = false;
 
   findMasks: ->
-    masks = document.getElementsByTagName 'iframe'
+    masks = document.getElementsByTagName 'img'
     @masks = for mask in masks
+      console.log mask
       new Mask mask
 
   restoreLies: ->
     for mask in @masks
+      console.log mask
       mask.show()
 
   hideLies: ->
@@ -196,17 +193,15 @@ class Glasses
       mask.hide()
 
   showTruths: ->
-    @assembleTruths()
     @skin.inject()
-    for truth in @truths
+    @truths = @masks.map (mask) ->
+      truth = new Truth mask
       truth.reveal()
+      truth
 
   removeTruth: ->
-    $('theyframe').remove()
+    theyframe = document.findElementsByTagName 'theyframe'
 
-  assembleTruths: ->
-    @truths = @masks.map (mask) ->
-      new Truth mask
 
 
 @g = new Glasses

@@ -26,6 +26,9 @@ module.exports = function(grunt) {
       }
     },
     sass: {
+      options: {
+        sourcemap: 'none'
+      },
       dist: {
         files: {
           'css/app.css': 'css/scss/app.scss'

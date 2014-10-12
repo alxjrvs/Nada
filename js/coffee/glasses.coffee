@@ -21,12 +21,14 @@ class Glasses
     @on = false;
 
   findMasks: ->
-    masks = document.getElementsByTagName 'iframe'
+    masks = document.getElementsByTagName 'img'
     @masks = for mask in masks
+      console.log mask
       new Mask mask
 
   restoreLies: ->
     for mask in @masks
+      console.log mask
       mask.show()
 
   hideLies: ->
@@ -34,15 +36,13 @@ class Glasses
       mask.hide()
 
   showTruths: ->
-    @assembleTruths()
     @skin.inject()
-    for truth in @truths
+    @truths = @masks.map (mask) ->
+      truth = new Truth mask
       truth.reveal()
+      truth
 
   removeTruth: ->
-    $('theyframe').remove()
+    theyframe = document.findElementsByTagName 'theyframe'
 
-  assembleTruths: ->
-    @truths = @masks.map (mask) ->
-      new Truth mask
 

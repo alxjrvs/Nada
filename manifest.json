@@ -15,11 +15,6 @@
     "activeTab"
   ],
 
-  "content_scripts": {
-    "matches": "*",
-    "js": ["js/jquery-1.11.1.min.js"]
-  },
-
   "browser_action": {
     "default_icon": "images/icon.png",
     "default_title": "Nada"

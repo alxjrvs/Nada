@@ -1,39 +1,34 @@
 class Skin
-  constructor: -> 
+  constructor: ->
   reject: ->
     $('.nada').remove()
 
   inject: ->
-    head = document.getElementsByTagName('head').item().innerHTML
-    head +  @font()
-    head + @style()
+    head = document.getElementsByTagName('head')[0]
+    fontElement = @fontElement()
+    styleElement = @styleElement()
+    head.appendChild fontElement
+    head.appendChild styleElement
 
-  font: ->
-    debugger
-    "<link #{@digest @fontConfig() }>"
+  fontElement: ->
+    element = document.createElement 'link'
+    @fontConfig element
 
-  style: ->
-    $('<link />', @styleConfig())
+  styleElement: ->
+    element = document.createElement 'link'
+    @styleConfig element
 
-  fontConfig: ->
-    {
-      class: 'nada',
-      href:'http://fonts.googleapis.com/css?family=Didact+Gothic',
-      rel: 'stylesheet',
-      type: 'text/css'
-    }
+  fontConfig: (elem) ->
+      elem.class = 'nada'
+      elem.href = 'http://fonts.googleapis.com/css?family=Didact+Gothic'
+      elem.rel = 'stylesheet'
+      elem.type = 'text/css'
+      elem
 
-  styleConfig: ->
-    {
-      class: 'nada',
-      rel: "stylesheet",
-      href: chrome.extension.getURL("css/app.css")
-      type: "text/css",
-      media: "all"
-    }
-
-  digest: (map) ->
-    line = null
-    for key, value in map
-      line = line + "#{key}=#{value}"
-    line
+  styleConfig: (elem) ->
+      elem.class ='nada'
+      elem.rel = "stylesheet"
+      elem.href = chrome.extension.getURL("css/app.css")
+      elem.type = "text/css"
+      elem.media = "all"
+      elem

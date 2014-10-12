@@ -1,9 +1,10 @@
 class Mask
   constructor: (@element) ->
-    @height = @element.offsetHeight
-    @width = @element.offsetWidth
-    @left = @element.offsetLeft
-    @top = @element.offsetTop
+    rect = @element.getBoundingClientRect()
+    @height = rect.height
+    @width = rect.width
+    @left = rect.left
+    @top = rect.top
 
   hide: ->
     @element.style.visibility = "hidden"
