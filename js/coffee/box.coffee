@@ -10,11 +10,5 @@ class Box
     else
       @orientation = 'square'
 
-  sansMargins: ->
-    {
-      height: @height - (@height * .2),
-      width: @width - (@width * .2)
-    }
-
   lineHeight: ->
     return @height

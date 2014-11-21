@@ -23,9 +23,5 @@ class Message
     @text = Message.TRUTH[Math.floor(Math.random() * Message.TRUTH.length)]
 
   fontSize: ->
-    if @box.orientation == "portrait" || @box.orientation == "square"
-      quotient = @text.length / 2
-      return @box.sansMargins().width / quotient
-    else if @box.orientation == "landscape" 
-      quotient = @text.length / 4
-      return @box.sansMargins().height / quotient
+    quotient = @text.length / 1.3
+    fontSize = @box.width / quotient

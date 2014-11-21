@@ -7,11 +7,11 @@ theyframe {
   position: absolute;
   background: #FFF;
   color: #000;
-  border: solid 4px #000;
   font-weight: 800;
+  overflow: hidden;
   text-align: center;
-  overflow: hidden; }
+  z-index: 200; }
 
 truth {
-  display: block;
-  text-transform: uppercase; }
+  text-transform: uppercase;
+  margin: 0 auto; }

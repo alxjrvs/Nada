@@ -6,7 +6,6 @@ $black: #000;
 //Colors
 $theyframe-background: $white;
 $theyframe-fontcolor: $black;
-$theyframe-border: solid 4px $black;
 
 body {
   filter: grayscale(100%) !important;
@@ -18,13 +17,13 @@ theyframe {
   position: absolute;
   background: $theyframe-background;
   color: $theyframe-fontcolor;
-  border: $theyframe-border;
   font-weight: 800;
-  text-align: center;
   overflow: hidden;
+  text-align: center;
+  z-index: 200;
 }
 
 truth {
-  display: block;
   text-transform: uppercase;
+  margin: 0 auto;
 }

@@ -1,2 +1,4 @@
-@g = new Glasses
+unless @g
+  @g = new Glasses
+
 @g.toggle()

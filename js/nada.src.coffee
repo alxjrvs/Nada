@@ -10,49 +10,83 @@ class Box
     else
       @orientation = 'square'
 
-  sansMargins: ->
-    {
-      height: @height - (@height * .2),
-      width: @width - (@width * .2)
-    }
-
   lineHeight: ->
     return @height
 
 class Skin
   constructor: ->
   reject: ->
-    $('.nada').remove()
+    for link in ['http://fonts.googleapis.com/css?family=Didact+Gothic', chrome.extension.getURL("css/app.css")]
+      match = @findLink(link)
+      if match.length > 0
+        skin = match[0]
+        skin.parentElement.removeChild skin
 
   inject: ->
+    @injectHead()
+    @injectContainer()
+
+  injectContainer: ->
+    body = document.getElementsByTagName('body')[0]
+    containerElement = @containerElement()
+    body.appendChild containerElement
+
+  injectHead: ->
     head = document.getElementsByTagName('head')[0]
     fontElement = @fontElement()
     styleElement = @styleElement()
     head.appendChild fontElement
     head.appendChild styleElement
 
+  containerElement: ->
+    containers = document.getElementsByTagName 'theycontainer'
+    if containers.length > 0
+      @element = containers[0]
+    else
+      @element = document.createElement 'theycontainer'
+    @element
+
   fontElement: ->
-    element = document.createElement 'link'
-    @fontConfig element
+    @findOrCreateLink @fontConfig(), 'http://fonts.googleapis.com/css?family=Didact+Gothic'
 
   styleElement: ->
-    element = document.createElement 'link'
-    @styleConfig element
+    @findOrCreateLink @styleConfig(), chrome.extension.getURL("css/app.css")
 
-  fontConfig: (elem) ->
-      elem.class = 'nada'
-      elem.href = 'http://fonts.googleapis.com/css?family=Didact+Gothic'
-      elem.rel = 'stylesheet'
-      elem.type = 'text/css'
-      elem
 
-  styleConfig: (elem) ->
-      elem.class ='nada'
-      elem.rel = "stylesheet"
-      elem.href = chrome.extension.getURL("css/app.css")
-      elem.type = "text/css"
-      elem.media = "all"
-      elem
+  findOrCreateLink: (config, link) ->
+    matches = @findLink(link)
+    element = null
+    if matches.length > 0
+      element = matches[0]
+    else
+      element = config
+    element
+
+
+  findLink: (link) ->
+    elements = document.getElementsByTagName('link')
+    matches = []
+    elements = for element in elements
+      if element.href == link
+        matches.push (element)
+    matches
+
+  fontConfig: ->
+    elem = document.createElement 'link'
+    elem.class = 'nada'
+    elem.href = 'http://fonts.googleapis.com/css?family=Didact+Gothic'
+    elem.rel = 'stylesheet'
+    elem.type = 'text/css'
+    elem
+
+  styleConfig: ->
+    elem = document.createElement 'link'
+    elem.class ='nada'
+    elem.rel = "stylesheet"
+    elem.href = chrome.extension.getURL("css/app.css")
+    elem.type = "text/css"
+    elem.media = "all"
+    elem
 
 class Message
   @TRUTH: [
@@ -79,12 +113,8 @@ class Message
     @text = Message.TRUTH[Math.floor(Math.random() * Message.TRUTH.length)]
 
   fontSize: ->
-    if @box.orientation == "portrait" || @box.orientation == "square"
-      quotient = @text.length / 2
-      return @box.sansMargins().width / quotient
-    else if @box.orientation == "landscape" 
-      quotient = @text.length / 4
-      return @box.sansMargins().height / quotient
+    quotient = @text.length / 1.3
+    fontSize = @box.width / quotient
 
 class Truth
   constructor: (@mask) ->
@@ -92,10 +122,9 @@ class Truth
     @assignMessage()
 
   reveal: ->
-    body = document.getElementsByTagName('body')[0]
+    container = document.getElementsByTagName('theycontainer')[0]
     theyframe = @theyframe()
-    console.log theyframe
-    body.appendChild theyframe
+    container.appendChild theyframe
 
   buildBox: ->
     @box = new Box @mask.height, @mask.width, @mask.left, @mask.top
@@ -117,6 +146,7 @@ class Truth
     "#{@message.text}--#{@generateUUID()}"
 
   textConfig: (elem) ->
+    elem.class = "#{@matchingClass()}"
     elem.innerHTML = @message.text
     elem.style["font-size"] = "#{@message.fontSize()}px"
     elem.style["line-height"] = "#{@box.lineHeight()}px"
@@ -126,9 +156,19 @@ class Truth
     elem.class = "#{@matchingClass()}"
     elem.style.height = "#{@box.height}px"
     elem.style.width = "#{@box.width}px"
-    elem.style.left = "#{@box.left - 10}px"
-    elem.style.top = "#{@box.top - 10}px"
+    elem.style.left = "#{@box.left}px"
+    elem.style.top = "#{@box.top}px"
+    elem.style.border = "solid #{@borderWidth()}px black"
     elem
+
+  borderWidth: ->
+    borderWidth = @box.width / 50
+
+    if borderWidth > 4
+      borderwidth = 4
+    else if borderWidth < 1
+      borderWidth = 1
+    borderWidth
 
   generateUUID: ->
     return @uuid if @uuid
@@ -136,7 +176,7 @@ class Truth
     @uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) ->
       r = (d + Math.random() * 16) % 16 | 0
       d = Math.floor(d / 16)
-      ((if c is "x" then r else (r & 0x7 | 0x8))).toString 16) 
+      ((if c is "x" then r else (r & 0x7 | 0x8))).toString 16)
     @uuid
 
 
@@ -148,61 +188,54 @@ class Mask
     @left = rect.left
     @top = rect.top
 
-  hide: ->
-    @element.style.visibility = "hidden"
-
-  show: ->
-    @element.style.visibility = "visible"
-
-
 class Glasses
-  constructor: -> 
+  constructor: ->
     @skin = new Skin
 
   toggle: ->
-    if @on
+    if @on()
       @takeOff()
     else
-      @putOn();
+      @putOn()
 
   putOn: ->
-    @findMasks()
-    @hideLies()
-    @showTruths()
-    @on = true;
+    @skin.inject()
+    @showTruth()
 
   takeOff: ->
-    @restoreLies()
-    @removeTruth()
     @skin.reject()
-    @on = false;
+    @removeTruth()
 
-  findMasks: ->
-    masks = document.getElementsByTagName 'img'
-    @masks = for mask in masks
-      console.log mask
-      new Mask mask
 
-  restoreLies: ->
-    for mask in @masks
-      console.log mask
-      mask.show()
+  removeTruth: ->
+    for container in @theyContainer()
+      container.parentElement.removeChild container
 
-  hideLies: ->
-    for mask in @masks
-      mask.hide()
-
-  showTruths: ->
-    @skin.inject()
-    @truths = @masks.map (mask) ->
+  showTruth: ->
+    @truths = @allMasks().map (mask) ->
       truth = new Truth mask
       truth.reveal()
       truth
 
-  removeTruth: ->
-    theyframe = document.findElementsByTagName 'theyframe'
+  allMasks: ->
+    masks = document.getElementsByTagName 'img'
+    @masks = for mask in masks
+      new Mask mask
+
+  on: ->
+    if @theyContainer().length > 0
+      return true
+    else
+      return false
+
+  theyContainer: ->
+    document.getElementsByTagName('theycontainer')
 
 
 
-@g = new Glasses
+
+
+unless @g
+  @g = new Glasses
+
 @g.toggle()

@@ -5,10 +5,3 @@ class Mask
     @width = rect.width
     @left = rect.left
     @top = rect.top
-
-  hide: ->
-    @element.style.visibility = "hidden"
-
-  show: ->
-    @element.style.visibility = "visible"
-

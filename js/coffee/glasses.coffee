@@ -1,48 +1,46 @@
 class Glasses
-  constructor: -> 
+  constructor: ->
     @skin = new Skin
 
   toggle: ->
-    if @on
+    if @on()
       @takeOff()
     else
-      @putOn();
+      @putOn()
 
   putOn: ->
-    @findMasks()
-    @hideLies()
-    @showTruths()
-    @on = true;
+    @skin.inject()
+    @showTruth()
 
   takeOff: ->
-    @restoreLies()
-    @removeTruth()
     @skin.reject()
-    @on = false;
+    @removeTruth()
 
-  findMasks: ->
-    masks = document.getElementsByTagName 'img'
-    @masks = for mask in masks
-      console.log mask
-      new Mask mask
 
-  restoreLies: ->
-    for mask in @masks
-      console.log mask
-      mask.show()
+  removeTruth: ->
+    for container in @theyContainer()
+      container.parentElement.removeChild container
 
-  hideLies: ->
-    for mask in @masks
-      mask.hide()
-
-  showTruths: ->
-    @skin.inject()
-    @truths = @masks.map (mask) ->
+  showTruth: ->
+    @truths = @allMasks().map (mask) ->
       truth = new Truth mask
       truth.reveal()
       truth
 
-  removeTruth: ->
-    theyframe = document.findElementsByTagName 'theyframe'
+  allMasks: ->
+    masks = document.getElementsByTagName 'img'
+    @masks = for mask in masks
+      new Mask mask
+
+  on: ->
+    if @theyContainer().length > 0
+      return true
+    else
+      return false
+
+  theyContainer: ->
+    document.getElementsByTagName('theycontainer')
+
+
 
 
